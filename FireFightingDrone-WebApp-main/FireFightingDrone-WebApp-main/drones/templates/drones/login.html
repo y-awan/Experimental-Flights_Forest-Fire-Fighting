@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Login Form Card -->
+            <div class="card shadow-sm p-4">
+                <h2 class="text-center mb-4">Login</h2>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+
+                    <!-- Submit Button -->
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Log in</button>
+                    </div>
+                </form>
+
+                <!-- Forgot Password Link -->
+                <div class="text-center mt-3">
+                    <p><a href="{% url 'password_reset' %}" class="text-decoration-none">Forgot your password?</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

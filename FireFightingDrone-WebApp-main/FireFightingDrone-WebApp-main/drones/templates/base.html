@@ -1,0 +1,85 @@
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Drone Management System{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'drones/style.css' %}">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="p-3 text-bg-dark">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                    <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
+                        <use xlink:href="#bootstrap"></use>
+                    </svg>
+                </a>
+
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="{% url 'home' %}" class="nav-link px-2 {% if request.resolver_match.url_name == 'home' %}text-warning active{% else %}text-white{% endif %}" aria-current="{% if request.resolver_match.url_name == 'home' %}page{% endif %}">Home</a></li>
+                    <li><a href="{% url 'map' %}" class="nav-link px-2 {% if request.resolver_match.url_name == 'map' %}text-warning active{% else %}text-white{% endif %}" aria-current="{% if request.resolver_match.url_name == 'map' %}page{% endif %}">Map</a></li>
+                    <li><a href="{% url 'about' %}" class="nav-link px-2 {% if request.resolver_match.url_name == 'about' %}text-warning active{% else %}text-white{% endif %}" aria-current="{% if request.resolver_match.url_name == 'about' %}page{% endif %}">About</a></li>
+                </ul>
+
+                <div class="text-end">
+                    {% if user.is_authenticated %}
+                        <span class="text-white me-3">Welcome, {{ user.first_name }}</span>
+                        <a href="{% url 'favorites_drones_list' %}" class="btn btn-outline-light me-2">Favorites</a>
+                        <a href="{% url 'profile' %}" class="btn btn-outline-light me-2">Profile</a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-light">Sign out</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-light me-2">Login</a>
+                        <a href="{% url 'register' %}" class="btn btn-warning">Sign-up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Section -->
+    <div class="container">
+        {% block content %}
+        <!-- Your page-specific content will be inserted here -->
+        {% endblock %}
+    </div>
+
+    <!-- Footer Section -->
+    <div class="container">
+        <footer class="py-3 my-4 footer-white"> <!-- Added 'footer-white' class -->
+            <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                <li class="nav-item">
+                    <a href="{% url 'home' %}" class="nav-link px-2 {% if request.resolver_match.url_name == 'home' %}text-warning{% else %}text-black{% endif %}">
+                        Home
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{% url 'map' %}" class="nav-link px-2 {% if request.resolver_match.url_name == 'map' %}text-warning{% else %}text-black{% endif %}">
+                        Map
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'about' %}" class="nav-link px-2 {% if request.resolver_match.url_name == 'about' %}text-warning{% else %}text-black{% endif %}">
+                        About
+                    </a>
+                </li>
+            </ul>
+            <p class="text-center text-black">© 2024 Drone Management System</p>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

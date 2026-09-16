@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Your Drones{% endblock %}
+
+{% block content %}
+<style>
+    .drone-page {
+        max-width: 500px;
+        margin: auto;
+        background-color: #f5fdf7;
+        padding: 30px 20px;
+        border-radius: 15px;
+        font-family: Arial, sans-serif;
+    }
+
+    .drone-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+
+    .drone-icon {
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+    }
+
+    .drone-entry {
+        border-bottom: 1px solid #ccc;
+        padding: 15px 0;
+    }
+
+    .drone-entry:last-child {
+        border-bottom: none;
+    }
+
+    .drone-entry h4 {
+        margin-bottom: 10px;
+    }
+
+    .battery {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .camera-btn {
+        margin-top: 10px;
+        background-color: #eee;
+        padding: 8px 12px;
+        border-radius: 6px;
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    .camera-icon {
+        margin-left: 5px;
+    }
+</style>
+
+<div class="drone-page">
+    <div class="drone-header">
+        <h2>Your Drones</h2>
+    </div>
+
+    {% if drones %}
+        {% for drone in drones %}
+        <div class="drone-entry">
+            <h4>{{ drone.name }}</h4>
+            <p><strong>Battery:</strong> <span class="battery">{{ drone.battery }}%</span></p>
+            <p><strong>Model:</strong> {{ drone.model }}</p>
+            <p><strong>Coordinates:</strong> {{ drone.coordinates }}</p>
+            <a href="#" class="camera-btn">View Camera Feed <span class="camera-icon">📷</span></a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info">You don't have any drones yet. Add one below!</div>
+    {% endif %}
+
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{% url 'add_drone' %}" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Add Drone</a>
+    </div>
+</div>
+{% endblock %}
