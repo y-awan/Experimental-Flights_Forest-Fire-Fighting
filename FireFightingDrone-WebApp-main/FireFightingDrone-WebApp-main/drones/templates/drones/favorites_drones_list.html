@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Favorite Drones{% endblock %}
+
+{% block content %}
+<style>
+    .favorites-page {
+        max-width: 550px;
+        margin: auto;
+        background-color: #f8f9fa;
+        padding: 30px 20px;
+        border-radius: 15px;
+        font-family: Arial, sans-serif;
+    }
+
+    .favorites-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+
+    .favorites-icon {
+        font-size: 24px;
+        margin-right: 10px;
+    }
+
+    .drone-entry {
+        border-bottom: 1px solid #ccc;
+        padding: 15px 0;
+    }
+
+    .drone-entry:last-child {
+        border-bottom: none;
+    }
+
+    .drone-entry h4 {
+        margin-bottom: 10px;
+    }
+
+    .battery {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .camera-btn {
+        margin-top: 10px;
+        background-color: #eee;
+        padding: 8px 12px;
+        border-radius: 6px;
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    .camera-icon {
+        margin-left: 5px;
+    }
+    
+    .empty-favorites {
+        text-align: center;
+        padding: 30px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .action-buttons {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+    }
+</style>
+
+<div class="favorites-page">
+    <div class="favorites-header">
+        <span class="favorites-icon">⭐</span>
+        <h2>Your Favorite Drones</h2>
+    </div>
+
+    {% if favorites %}
+        {% for favorite in favorites %}
+        <div class="drone-entry">
+            <h4>{{ favorite.drone.name }}</h4>
+            <p><strong>Battery:</strong> <span class="battery">{{ favorite.drone.battery }}%</span></p>
+            <p><strong>Model:</strong> {{ favorite.drone.model }}</p>
+            <p><strong>Coordinates:</strong> {{ favorite.drone.coordinates }}</p>
+            <div class="action-buttons">
+                <a href="#" class="camera-btn">View Camera Feed <span class="camera-icon">📷</span></a>
+                <a href="{% url 'like_drone' favorite.drone.id %}" class="btn btn-outline-danger btn-sm">Remove from Favorites</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-favorites">
+            <p>You don't have any favorite drones yet.</p>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-3">View All Drones</a>
+        </div>
+    {% endif %}
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+    </div>
+</div>
+{% endblock %}
