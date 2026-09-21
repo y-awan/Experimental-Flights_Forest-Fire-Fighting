@@ -80,7 +80,10 @@ class DroneController:
         elif next_state == "ST_SURVEY":
             logging.info("Starting Circle Survey (20m Orbit)")
             # MAV_CMD_DO_ORBIT: Radius=20, Velocity=5, Yaw=0 (Face Center)
-            self.send_command(mavutil.mavlink.MAV_CMD_DO_ORBIT, 20, 5, 0, 0, 0, 0, 0)
+            # Some pymavlink dialects don't expose MAV_CMD_DO_ORBIT as a named
+            # constant; fall back to its standard MAVLink command id (34).
+            do_orbit = getattr(mavutil.mavlink, "MAV_CMD_DO_ORBIT", 34)
+            self.send_command(do_orbit, 20, 5, 0, 0, 0, 0, 0)
 
         elif next_state == "ST_RETURN":
             logging.info("Returning to Launch (RTL)...")

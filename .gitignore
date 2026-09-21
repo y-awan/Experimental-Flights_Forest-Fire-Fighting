@@ -1,0 +1,35 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# ---- Virtual environments ----
+venv/
+.venv/
+env/
+ENV/
+
+# ---- Django ----
+db.sqlite3
+db.sqlite3-journal
+*.log
+local_settings.py
+
+# ---- Secrets / credentials (do NOT commit) ----
+.env
+*.env
+*service-account*.json
+*-key.json
+PubSubKey.json
+my-service-account-key.json
+
+# ---- OS / editor junk ----
+.DS_Store
+.DS_Store?
+Thumbs.db
+*.swp
+*~
+
+# ---- Streaming output ----
+RTMP-setup/stream/

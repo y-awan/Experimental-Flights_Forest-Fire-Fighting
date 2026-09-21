@@ -19,6 +19,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 # SECURITY WARNING: DO NOT HARDCODE API KEYS
 
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -147,6 +148,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY'  # Replace with the actual Google Maps API key
+# Read the Google Maps JavaScript API key from the environment.
+# Set it before running: export GOOGLE_MAPS_API_KEY="AIzaSy..."
+GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '')  # Falls back to empty if unset
 
 # Note: For security reasons, do not hardcode sensitive information like API keys in your code.

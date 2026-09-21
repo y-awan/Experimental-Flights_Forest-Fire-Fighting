@@ -1,0 +1,5 @@
+/* drones/static/drones/style.css
+ * Custom styles for the Fire Fighting Drone web app.
+ * Loaded by base.html via {% static 'drones/style.css' %}.
+ * Add project-specific styles here; Bootstrap handles the base layout.
+ */
