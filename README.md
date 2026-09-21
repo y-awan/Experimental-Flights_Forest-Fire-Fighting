@@ -1,5 +1,5 @@
 # Experimental_Flights-Drone_CommsTeam
-
+    - Daniel Stein 09/21/2026
 A repository for all drone-to-app communications and camera software, including servers and other related scripts.
 
 This repo holds the ground/companion-computer software for the Experimental Flights forest fire-fighting drone. It covers three main data paths:
@@ -42,6 +42,7 @@ This repo holds the ground/companion-computer software for the Experimental Flig
 | `drone_controller.py` | Command-driven flight state machine. Listens for commands on Pub/Sub and drives ArduPilot over MAVLink. |
 | `command_protocol.py` | Command-normalization helper. Maps free-form command aliases to a canonical vocabulary. |
 | `run_controller_sim.py` | Test harness that drives `DroneController` against an ArduPilot SITL simulator without needing Pub/Sub. |
+| `sim/` | Scripts + docs to start the ArduPilot SITL simulator (Docker/Colima) for local testing. See `sim/README.md`. |
 | `telemetry-server/` | FastAPI telemetry server. Bridges MAVLink telemetry to WebSocket clients and Google Cloud Pub/Sub. |
 | `RTMP-setup/` | Scripts to stand up an NGINX-RTMP/HLS server and stream camera video to Google Cloud Storage. |
 | `test-telemetry/` | Standalone/experimental telemetry servers used during development, including a dummy-data generator. |
@@ -110,6 +111,62 @@ python run_controller_sim.py --command RTL
 # Override the MAVLink endpoint
 python run_controller_sim.py --mavlink udp:127.0.0.1:14552
 ```
+
+---
+
+## Ground Control (QGroundControl) & MAVLink Ports
+
+[QGroundControl](http://qgroundcontrol.com/) (QGC) is the ground control station used to monitor and fly the drone manually alongside these scripts — for map view, mission planning, mode changes, and a manual override during testing. It is not part of this repo (it's a separate desktop app you install), but the scripts are written to run *next to* it, which is why they use different MAVLink ports.
+
+A single MAVLink stream can only be consumed by one client at a time, so the software (ArduPilot SITL or a MAVProxy/mavlink-router hub on the Pi) fans it out to several UDP ports. That lets QGroundControl and the Python scripts connect simultaneously without fighting over the link.
+
+Ports this repo expects:
+
+| Port | Used by | Notes |
+|------|---------|-------|
+| `udp:127.0.0.1:14550` | `drone_controller.py`, `telemetry-server/telemetry-server.py` | Primary GCS port. `telemetry-server.py` connects here (MAVProxy's GCS port) for two-way comms. |
+| `udp:127.0.0.1:14550` | **QGroundControl** | QGC listens on 14550 by default, so run it against this port. |
+| `udp:127.0.0.1:14552` | `run_controller_sim.py` | SITL bridge port for the test harness — deliberately kept off 14550 so QGC can keep it. |
+| `udp:127.0.0.1:14557` | `test-telemetry/task1.py`, `test-telemetry/dummy.py` | Experimental dev servers. |
+
+> Note the controller/telemetry-server and QGroundControl both default to `14550`. Only one process can bind a given endpoint, so either point them at separate fan-out ports (via MAVProxy/mavlink-router) or run only one on `14550` at a time.
+
+### Running the simulator
+
+SITL runs in Docker so it works the same on macOS, Linux, and Windows. A helper
+script builds the image (first run only) and starts the sim streaming MAVLink to
+both ports:
+
+```bash
+./sim/start_sim.sh          # build if needed, then start the sim
+./sim/start_sim.sh status   # is Docker up? is the container up? what's on 14550?
+./sim/start_sim.sh stop     # shut it down
+```
+
+Full setup — installing Docker, cloning ArduPilot, connecting QGroundControl, and
+troubleshooting — is in **[`sim/README.md`](sim/README.md)**. In short: install
+Docker, clone ArduPilot to `~/ardupilot`, then run the script above.
+
+Then, with the sim up:
+
+```bash
+# Open QGroundControl — connect a UDP link on 14550 (or enable AutoConnect UDP)
+
+# Drive the controller against the sim
+python run_controller_sim.py --mavlink udp:127.0.0.1:14552 --command START_MISSION
+```
+
+With this arrangement you can watch the drone in QGroundControl while the state
+machine flies it.
+
+> If ArduPilot builds natively on your machine, you can skip Docker and run
+> `sim_vehicle.py -v ArduCopter --out=udp:127.0.0.1:14550 --out=udp:127.0.0.1:14552`
+> directly. Docker is the supported path because the native build does not link
+> on some newer toolchains (see `sim/README.md`).
+
+> **"QGC says disconnected"** almost always means the simulator isn't actually
+> running — most often the Docker daemon is stopped. See the troubleshooting
+> section in `sim/README.md`.
 
 ---
 
