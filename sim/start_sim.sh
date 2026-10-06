@@ -84,18 +84,18 @@ echo "==> 3/4 Removing any old '$CONTAINER' container"
 "$DOCKER" rm -f "$CONTAINER" >/dev/null 2>&1 || true
 
 echo "==> 4/4 Starting SITL ($VEHICLE) -> host UDP 14550 (QGC) + 14552 (run_controller_sim.py)"
-# host.docker.internal lets the container reach the host's UDP listeners (QGC, harness).
-# It resolves on Docker Desktop automatically; the --add-host line makes it work on Linux too.
+# Forward to the host; publishing container UDP ports is the opposite direction.
+# Desktop/Colima provide host.docker.internal. Native Linux needs host-gateway.
+HOST_ARGS=(--name "$CONTAINER")
+if [ "$(uname -s)" = "Linux" ]; then
+    HOST_ARGS+=(--add-host=host.docker.internal:host-gateway)
+fi
 exec "$DOCKER" run --rm -it \
-    --name "$CONTAINER" \
-    --add-host=host.docker.internal:host-gateway \
-    -p 14550:14550/udp \
-    -p 14552:14552/udp \
+    "${HOST_ARGS[@]}" \
     "$IMAGE" \
     ./Tools/autotest/sim_vehicle.py -v "$VEHICLE" \
         -w --no-rebuild \
         --speedup "$SITL_SPEEDUP" \
         --custom-location="$SITL_LOCATION" \
-        --out=udp:0.0.0.0:14550 \
-        --out=udp:0.0.0.0:14552 \
-        --no-mavproxy
+        --out=udp:host.docker.internal:14550 \
+        --out=udp:host.docker.internal:14552
